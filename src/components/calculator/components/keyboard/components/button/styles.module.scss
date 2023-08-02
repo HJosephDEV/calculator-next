@@ -1,0 +1,54 @@
+.button {
+  height: 60px;
+  width: 60px;
+  background: #c1dfff3b;
+  border-radius: 50%;
+  border: 1px solid #c1dfff;
+  transition: all 0.4s ease;
+  cursor: pointer;
+
+  &:hover {
+    background: #b8b5ff;
+    border-color: #b8b5ff;
+    color: #fff;
+  }
+}
+
+.key-equal {
+  grid-row: span 2;
+  height: 100%;
+  border-radius: 30px;
+}
+
+.key-equal,
+.key-clear {
+  background: #b8b5ff !important;
+  border-color: #b8b5ff !important;
+  color: #fff;
+}
+
+@media (max-width: 420px) {
+  .button {
+    height: 50px;
+    width: 50px;
+  }
+
+  .key-equal {
+    grid-row: span 2;
+    height: 100%;
+    border-radius: 30px;
+  }
+}
+
+@media (max-width: 320px) {
+  .button {
+    height: 45px;
+    width: 45px;
+  }
+
+  .key-equal {
+    grid-row: span 2;
+    height: 100%;
+    border-radius: 30px;
+  }
+}

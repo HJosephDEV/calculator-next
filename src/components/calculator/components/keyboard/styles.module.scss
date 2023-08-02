@@ -1,0 +1,9 @@
+.container {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 20px 0px;
+
+  justify-items: center;
+  align-items: center;
+}

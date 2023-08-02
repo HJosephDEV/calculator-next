@@ -1,0 +1,9 @@
+.container {
+  background-image: url('/images/background.jpg');
+  min-height: 100dvh;
+  padding: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

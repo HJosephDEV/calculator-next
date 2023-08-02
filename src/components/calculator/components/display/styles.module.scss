@@ -1,0 +1,31 @@
+.wrapper {
+  padding: 0 calc(((100% / 4) - 60px) / 2);
+  .container {
+    width: 100%;
+    height: 160px;
+    padding: 16px;
+    border-radius: 10px;
+    background: #d4e7ff1b;
+    border: 2px solid #d4e7ff;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-end;
+
+    gap: 18px;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 420px) {
+  .wrapper {
+    padding: 0 calc(((100% / 4) - 50px) / 2);
+  }
+}
+
+@media (max-width: 320px) {
+  .wrapper {
+    padding: 0 calc(((100% / 4) - 45px) / 2);
+  }
+}
