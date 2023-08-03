@@ -9,63 +9,37 @@ import { CalculatorKeyboardButton } from './@types';
 
 export default function Calculator(): JSX.Element {
   const [displayValue, setDisplayValue] = useState<string>('');
-  const [allowedComma, setAllowedComma] = useState<boolean>(true);
 
-  const handleComma = (key = '') => {
-    if (key === ',') {
-      setAllowedComma(false);
-      return;
-    }
+  const handleComma = () => {
+    const sinals = ['+', '-', '/', '*'];
+    const reverseString = displayValue.split('').reverse();
+    const lastSinalIndex = reverseString.findIndex((letter: string) => sinals.includes(letter));
+    const numberInList =
+      lastSinalIndex === -1 ? displayValue : reverseString.slice(0, lastSinalIndex - 1).reverse();
+    const hasComma = numberInList.indexOf(',') > -1;
 
-    let display = '';
-    if (key !== 'back') display = displayValue + key;
-    if (key === 'back') display = displayValue.substring(0, displayValue.length - 1);
+    if (hasComma) return false;
 
-    const commaNumbers: number = display
-      .split('')
-      .filter((letter: string) => letter === ',').length;
-
-    if (commaNumbers === 0) return;
-
-    const reverseString: string[] = display.split('').reverse();
-    const lastCommaIndex: number = reverseString.indexOf(',');
-    const arraySinceLastComma: string[] = reverseString.slice(0, lastCommaIndex).reverse();
-
-    let allowComma = false;
-    for (let i = 0; i < arraySinceLastComma.length; i++) {
-      if (allowComma) break;
-
-      const element = arraySinceLastComma[i];
-      const sinals = ['+', '-', '/', '*'];
-
-      allowComma =
-        sinals.includes(element) &&
-        !isNaN(Number(arraySinceLastComma[i - 1])) &&
-        !isNaN(Number(arraySinceLastComma[i + 1]));
-    }
-
-    setAllowedComma(allowComma);
+    return true;
   };
 
   const handleKey = (key?: string) => {
-    if (!allowedComma && key === ',') return;
+    const allowComma = handleComma();
+    if (!allowComma && key === ',') return;
 
     if (isNaN(Number(displayValue.at(-1))) && isNaN(Number(key))) {
       setDisplayValue(displayValue.substring(0, displayValue.length - 1) + key);
       return;
     }
 
-    handleComma(key ?? '');
     setDisplayValue(displayValue + key);
   };
 
   const handleClear = () => {
     setDisplayValue('');
-    setAllowedComma(true);
   };
 
   const handleBack = () => {
-    handleComma('back');
     setDisplayValue(displayValue.substring(0, displayValue.length - 1));
   };
 
