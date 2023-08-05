@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import CalculatorDisplay from './components/display';
 import CalculatorKeyboard from './components/keyboard';
@@ -10,14 +10,42 @@ import { CalculatorKeyboardButton, DisplayViewProps } from './@types';
 import styles from './styles.module.scss';
 
 export default function Calculator(): JSX.Element {
-  const [displayValue, setDisplayValue] = useState<string>('');
+  const [displayValue, setDisplayValue] = useState<string>('0');
   const [historic, setHistoric] = useState<string[]>([]);
   const [expressionResult, setExpressionResult] = useState<string>('');
   const sinals: string[] = ['+', '-', '/', '*'];
+  const allowedKey: string[] = [
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    ',',
+    '%',
+    '=',
+    'Backspace',
+    'Delete',
+    ...sinals
+  ];
   const displayView: DisplayViewProps = {
     expression: displayValue.replaceAll('/', ':').replaceAll('*', 'x'),
     result: expressionResult
   };
+
+  const handlePressKey = ({ key }: { key: string }) => {
+    allowedKey.includes(key) &&
+      buttonsList.find((k: CalculatorKeyboardButton) => k.keyboardKey === key)?.event();
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handlePressKey);
+    return () => window.removeEventListener('keydown', handlePressKey);
+  }, [handlePressKey]);
 
   const handleComma = () => {
     if (!!expressionResult) {
@@ -99,7 +127,7 @@ export default function Calculator(): JSX.Element {
   const handleKey = (key: string) => {
     if (!!expressionResult) {
       const isSinal: boolean = sinals.includes(key);
-      const newDisplay = isSinal ? `${expressionResult}${key}` : key;
+      const newDisplay: string = isSinal ? `${expressionResult}${key}` : key;
       handleKeyAfterResult();
       setDisplayValue(newDisplay);
       return;
@@ -110,7 +138,9 @@ export default function Calculator(): JSX.Element {
   };
 
   const handleClear = () => {
-    setDisplayValue('');
+    setDisplayValue('0');
+    setHistoric([]);
+    setExpressionResult('');
   };
 
   const handleBack = () => {
@@ -118,28 +148,34 @@ export default function Calculator(): JSX.Element {
   };
 
   const handleResult = () => {
-    const value = eval(displayValue.replaceAll(',', '.')).toString();
+    const lastDigit: string = displayValue.at(-1) ?? '';
+    if (sinals.includes(lastDigit) || lastDigit === ',') return;
+    const value: string = eval(displayValue.replaceAll(',', '.')).toString();
     setExpressionResult(value);
   };
 
   const buttonsList: Array<CalculatorKeyboardButton> = [
     {
-      keyboardKey: 'clear',
+      name: 'clear',
+      keyboardKey: 'Delete',
       content: 'C',
       event: () => handleClear()
     },
     {
-      keyboardKey: 'back',
+      name: 'back',
+      keyboardKey: 'Backspace',
       content: '<',
       event: () => handleBack()
     },
     {
-      keyboardKey: 'division',
+      name: 'division',
+      keyboardKey: '/',
       content: ':',
       event: () => handleKey('/')
     },
     {
-      keyboardKey: 'multiplication',
+      name: 'multiplication',
+      keyboardKey: '*',
       content: 'X',
       event: () => handleKey('*')
     },
@@ -156,7 +192,8 @@ export default function Calculator(): JSX.Element {
       event: () => handleKey('9')
     },
     {
-      keyboardKey: 'minus',
+      name: 'minus',
+      keyboardKey: '-',
       content: '-',
       event: () => handleKey('-')
     },
@@ -173,7 +210,8 @@ export default function Calculator(): JSX.Element {
       event: () => handleKey('6')
     },
     {
-      keyboardKey: 'plus',
+      name: 'plus',
+      keyboardKey: '+',
       content: '+',
       event: () => handleKey('+')
     },
@@ -190,7 +228,8 @@ export default function Calculator(): JSX.Element {
       event: () => handleKey('3')
     },
     {
-      keyboardKey: 'equal',
+      name: 'equal',
+      keyboardKey: '=',
       content: '=',
       event: () => handleResult()
     },

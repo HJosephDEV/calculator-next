@@ -8,6 +8,7 @@ export type CalculatorButtonProps = {
 
 export type CalculatorKeyboardButton = {
   event: (key?: string) => void;
+  name?: string;
   keyboardKey: string;
   content?: string;
 };
