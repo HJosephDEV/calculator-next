@@ -3,35 +3,109 @@
 import { useState } from 'react';
 
 import CalculatorDisplay from './components/display';
-import styles from './styles.module.scss';
 import CalculatorKeyboard from './components/keyboard';
-import { CalculatorKeyboardButton } from './@types';
+
+import { CalculatorKeyboardButton, DisplayViewProps } from './@types';
+
+import styles from './styles.module.scss';
 
 export default function Calculator(): JSX.Element {
   const [displayValue, setDisplayValue] = useState<string>('');
-
-  const handleComma = () => {
-    const sinals = ['+', '-', '/', '*'];
-    const reverseString = displayValue.split('').reverse();
-    const lastSinalIndex = reverseString.findIndex((letter: string) => sinals.includes(letter));
-    const numberInList =
-      lastSinalIndex === -1 ? displayValue : reverseString.slice(0, lastSinalIndex - 1).reverse();
-    const hasComma = numberInList.indexOf(',') > -1;
-
-    if (hasComma) return false;
-
-    return true;
+  const [historic, setHistoric] = useState<string[]>([]);
+  const [expressionResult, setExpressionResult] = useState<string>('');
+  const sinals: string[] = ['+', '-', '/', '*'];
+  const displayView: DisplayViewProps = {
+    expression: displayValue.replaceAll('/', ':').replaceAll('*', 'x'),
+    result: expressionResult
   };
 
-  const handleKey = (key?: string) => {
-    const allowComma = handleComma();
-    if (!allowComma && key === ',') return;
-
-    if (isNaN(Number(displayValue.at(-1))) && isNaN(Number(key))) {
-      setDisplayValue(displayValue.substring(0, displayValue.length - 1) + key);
+  const handleComma = () => {
+    if (!!expressionResult) {
+      handleKeyAfterResult();
+      setDisplayValue(`${expressionResult},`);
       return;
     }
 
+    const reverseString: string[] = displayValue.split('').reverse();
+    const lastSinalIndex: number = reverseString.findIndex((letter: string) =>
+      sinals.includes(letter)
+    );
+    const number: string =
+      lastSinalIndex === -1
+        ? displayValue
+        : reverseString.slice(0, lastSinalIndex).reverse().join();
+
+    const hasComma: boolean = number.indexOf(',') > -1;
+
+    if (!number.length) return false;
+    if (hasComma) return false;
+
+    const isLastNaN: boolean = handleNaN(',', true);
+    !isLastNaN && setDisplayValue(`${displayValue},`);
+  };
+
+  const handleKeyAfterResult = () => {
+    const completedExpression = `${displayValue} = ${expressionResult}`;
+    setHistoric([...historic, completedExpression]);
+    setExpressionResult('');
+  };
+
+  const handlePercentage = () => {
+    let percentage: number = 0.0;
+
+    if (!!expressionResult) {
+      percentage = Number(expressionResult) / 100;
+      handleKeyAfterResult();
+      setDisplayValue(percentage.toString());
+      return;
+    }
+
+    const display = sinals.includes(displayValue.at(-1) || '')
+      ? displayValue.substring(0, displayValue.length - 1)
+      : displayValue;
+    const hasSinal: boolean = sinals.map((sinal) => display.includes(sinal)).includes(true);
+    const hasOnlySinalEnd: boolean = sinals.includes(display.at(-1) || '');
+    const sinalsLength: number = display
+      .split('')
+      .filter((string: string) => sinals.includes(string)).length;
+
+    if (!hasSinal || (hasOnlySinalEnd && sinalsLength === 1)) {
+      const number: string = hasOnlySinalEnd ? display.substring(0, display.length - 1) : display;
+      percentage = Number(number) / 100;
+      setDisplayValue(percentage.toString());
+      return;
+    }
+
+    const lastSinalIndex: number = display
+      .split('')
+      .findLastIndex((string: string) => sinals.includes(string));
+    const number: number = Number(display.slice(lastSinalIndex + 1));
+    percentage = number / 100;
+    const expression: string = display.substring(0, lastSinalIndex);
+    const result: number = eval(expression) * percentage;
+    const newDisplayValue: string = `${expression}${display[lastSinalIndex]}${result}`;
+
+    setDisplayValue(newDisplayValue);
+  };
+
+  const handleNaN = (key: string, replace: boolean): boolean => {
+    if (isNaN(Number(displayValue.at(-1))) && isNaN(Number(key))) {
+      replace && setDisplayValue(displayValue.substring(0, displayValue.length - 1) + key);
+      return true;
+    }
+
+    return false;
+  };
+  const handleKey = (key: string) => {
+    if (!!expressionResult) {
+      const isSinal: boolean = sinals.includes(key);
+      const newDisplay = isSinal ? `${expressionResult}${key}` : key;
+      handleKeyAfterResult();
+      setDisplayValue(newDisplay);
+      return;
+    }
+
+    if (handleNaN(key, true)) return;
     setDisplayValue(displayValue + key);
   };
 
@@ -41,6 +115,11 @@ export default function Calculator(): JSX.Element {
 
   const handleBack = () => {
     setDisplayValue(displayValue.substring(0, displayValue.length - 1));
+  };
+
+  const handleResult = () => {
+    const value = eval(displayValue.replaceAll(',', '.')).toString();
+    setExpressionResult(value);
   };
 
   const buttonsList: Array<CalculatorKeyboardButton> = [
@@ -113,15 +192,11 @@ export default function Calculator(): JSX.Element {
     {
       keyboardKey: 'equal',
       content: '=',
-      event: () => {
-        console.log('oi');
-      }
+      event: () => handleResult()
     },
     {
       keyboardKey: '%',
-      event: () => {
-        console.log('hi');
-      }
+      event: () => handlePercentage()
     },
     {
       keyboardKey: '0',
@@ -129,14 +204,16 @@ export default function Calculator(): JSX.Element {
     },
     {
       keyboardKey: ',',
-      event: () => handleKey(',')
+      event: () => handleComma()
     }
   ];
 
   return (
     <div className={styles.container}>
-      <CalculatorDisplay />
-      {displayValue}
+      <CalculatorDisplay
+        displayView={displayView}
+        historic={historic}
+      />
       <CalculatorKeyboard buttonsList={buttonsList} />
     </div>
   );

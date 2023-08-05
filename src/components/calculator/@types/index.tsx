@@ -13,3 +13,13 @@ export type CalculatorKeyboardButton = {
 };
 
 export type CalculatorKeyboardProps = { buttonsList: Array<CalculatorKeyboardButton> };
+
+export type DisplayViewProps = {
+  expression: string;
+  result: string;
+};
+
+export type CalculatorDisplayProps = {
+  displayView: DisplayViewProps;
+  historic: string[];
+};
