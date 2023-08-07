@@ -1,5 +1,7 @@
 .container {
   background-image: url('/images/background.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
   min-height: 100dvh;
   padding: 20px;
 
