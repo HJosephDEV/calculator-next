@@ -8,10 +8,10 @@ export default function CalculatorKeyboard({ buttonsList }: CalculatorKeyboardPr
     buttonsList.map((button: CalculatorKeyboardButton) => (
       <CalculatorButton
         key={`key-${button.keyboardKey}`}
-        event={button.event}
         id={`key-${button.name || button.keyboardKey}`}
+        event={button.event}
       >
-        {button?.content ?? button.keyboardKey}
+        {button?.content}
       </CalculatorButton>
     ));
 
