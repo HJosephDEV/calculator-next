@@ -89,30 +89,32 @@ export default function Calculator(): JSX.Element {
       return;
     }
 
-    const display = sinals.includes(displayValue.at(-1) || '')
+    const displayValueLocal: string = sinals.includes(displayValue.at(-1) || '')
       ? displayValue.substring(0, displayValue.length - 1)
       : displayValue;
-    const hasSinal: boolean = sinals.map((sinal) => display.includes(sinal)).includes(true);
-    const hasOnlySinalEnd: boolean = sinals.includes(display.at(-1) || '');
-    const sinalsLength: number = display
-      .split('')
-      .filter((string: string) => sinals.includes(string)).length;
 
-    if (!hasSinal || (hasOnlySinalEnd && sinalsLength === 1)) {
-      const number: string = hasOnlySinalEnd ? display.substring(0, display.length - 1) : display;
+    const splitedDisplayValueLocal: string[] = displayValueLocal.split('');
+
+    const lastSinalIndex: number = splitedDisplayValueLocal.findIndex(
+      (letter: string, i: number) =>
+        sinals.includes(letter) && splitedDisplayValueLocal[i - 1] !== 'e'
+    );
+
+    const hasSinals: boolean = lastSinalIndex > -1;
+
+    if (!hasSinals) {
+      const number: string = displayValueLocal.replaceAll(',', '.');
       percentage = Number(number) / 100;
-      setDisplayValue(percentage.toString());
+      const stringPercentage: string = percentage.toString().replaceAll('.', ',');
+      setDisplayValue(stringPercentage);
       return;
     }
 
-    const lastSinalIndex: number = display
-      .split('')
-      .findLastIndex((string: string) => sinals.includes(string));
-    const number: number = Number(display.slice(lastSinalIndex + 1));
+    const number: number = Number(displayValueLocal.slice(lastSinalIndex + 1).replaceAll(',', '.'));
     percentage = number / 100;
-    const expression: string = display.substring(0, lastSinalIndex);
+    const expression: string = displayValueLocal.substring(0, lastSinalIndex).replaceAll(',', '.');
     const result: number = eval(expression) * percentage;
-    const newDisplayValue: string = `${expression}${display[lastSinalIndex]}${result}`;
+    const newDisplayValue: string = `${expression}${displayValueLocal[lastSinalIndex]}${result}`;
 
     setDisplayValue(newDisplayValue);
   };
