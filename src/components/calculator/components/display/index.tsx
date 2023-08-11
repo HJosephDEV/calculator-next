@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { CalculatorDisplayProps } from '../../@types';
 import styles from './styles.module.scss';
 
@@ -17,8 +17,10 @@ export default function CalculatorDisplay({
     </div>
   ));
 
-  historicWrapperRef.current &&
-    historicWrapperRef.current.scrollTo(0, historicContainerRef.current?.offsetHeight || 0);
+  useEffect(() => {
+    historicWrapperRef.current &&
+      historicWrapperRef.current.scrollTo(0, historicContainerRef.current?.offsetHeight || 0);
+  }, [historic]);
 
   return (
     <div className={styles.wrapper}>
