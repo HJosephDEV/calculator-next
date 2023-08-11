@@ -130,7 +130,7 @@ export default function Calculator(): JSX.Element {
   };
 
   const handleZeroInDisplay = (key: string): boolean => {
-    if (displayValue[0] !== '0') return false;
+    if (displayValue.length === 1 && displayValue[0] === '0' && key === '0') return true;
 
     if (
       displayValue.length === 1 &&
@@ -142,10 +142,7 @@ export default function Calculator(): JSX.Element {
       return true;
     }
 
-    if (
-      (displayValue.at(-1) === '0' && key === '0' && sinals.includes(displayValue.at(-2) || '')) ||
-      (displayValue.at(-1) === '0' && key === '0')
-    ) {
+    if (displayValue.at(-1) === '0' && key === '0' && sinals.includes(displayValue.at(-2) || '')) {
       return true;
     }
 
