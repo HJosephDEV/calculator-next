@@ -202,7 +202,6 @@ export default function Calculator(): JSX.Element {
 
   const handleResult = () => {
     const lastDigit: string = displayValue.at(-1) ?? '';
-    console.log(lastDigit);
     if (sinals.includes(lastDigit) || lastDigit === '.') return;
     const value: string = eval(displayValue.replaceAll(',', '.')).toString().replaceAll('.', ',');
     setExpressionResult(value);
