@@ -10,7 +10,7 @@ export type CalculatorKeyboardButton = {
   event: (key?: string) => void;
   name?: string;
   keyboardKey: string;
-  content?: string;
+  content?: string | JSX.Element;
 };
 
 export type CalculatorKeyboardProps = { buttonsList: Array<CalculatorKeyboardButton> };

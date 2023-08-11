@@ -6,12 +6,21 @@
   border: 1px solid #c1dfff;
   transition: all 0.4s ease;
   font-size: 18px;
+  font-family: 'Pacifico', cursive;
   cursor: pointer;
 
   &:hover {
     background: #b8b5ff;
     border-color: #b8b5ff;
     color: #fff;
+
+    svg {
+      circle,
+      line,
+      path {
+        color: #fff;
+      }
+    }
   }
 }
 
@@ -26,6 +35,12 @@
   background: #b8b5ff !important;
   border-color: #b8b5ff !important;
   color: #fff;
+
+  svg {
+    line {
+      color: #fff;
+    }
+  }
 }
 
 @media (max-width: 420px) {

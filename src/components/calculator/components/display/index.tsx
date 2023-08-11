@@ -13,7 +13,7 @@ export default function CalculatorDisplay({
       key={`expression-${i}`}
       className={styles.historicItem}
     >
-      <div className={styles.itemContent}>{expression}</div>
+      {expression}
     </div>
   ));
 
@@ -37,7 +37,8 @@ export default function CalculatorDisplay({
 
         <div className={styles.visorContainer}>
           {displayView.expression}
-          {!!displayView.result && `= ${displayView.result}`}
+          <br />
+          {!!displayView.result && `=${displayView.result}`}
         </div>
       </div>
     </div>

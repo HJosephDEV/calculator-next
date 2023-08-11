@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { LuDelete, LuDivide, LuMinus, LuPlus, LuX, LuEqual, LuPercent } from 'react-icons/lu';
 
 import CalculatorDisplay from './components/display';
 import CalculatorKeyboard from './components/keyboard';
@@ -69,11 +70,11 @@ export default function Calculator(): JSX.Element {
     if (!number.length || hasComma) return false;
 
     const isLastNaN: boolean = handleNaN(',', true);
-    !isLastNaN && setDisplayValue(`${displayValue}.`);
+    !isLastNaN && setDisplayValue(`${displayValue},`);
   };
 
   const handleKeyAfterResult = () => {
-    const completedExpression: string = `${displayValue} = ${expressionResult}`;
+    const completedExpression: string = `${displayValue}=${expressionResult}`;
     setHistoric([...historic, completedExpression]);
     setExpressionResult('');
   };
@@ -128,10 +129,38 @@ export default function Calculator(): JSX.Element {
     return false;
   };
 
-  const handleZeroInDisplay = (key: string) => {
-    if (key === '0') return;
+  const handleZeroInDisplay = (key: string): boolean => {
+    if (displayValue[0] !== '0') return false;
 
-    setDisplayValue(key);
+    if (
+      displayValue.length === 1 &&
+      displayValue[0] === '0' &&
+      !sinals.includes(key) &&
+      key !== '0'
+    ) {
+      setDisplayValue(key);
+      return true;
+    }
+
+    if (
+      (displayValue.at(-1) === '0' && key === '0' && sinals.includes(displayValue.at(-2) || '')) ||
+      (displayValue.at(-1) === '0' && key === '0')
+    ) {
+      return true;
+    }
+
+    if (
+      displayValue.at(-1) === '0' &&
+      sinals.includes(displayValue.at(-2) || '') &&
+      key !== '0' &&
+      key !== '.'
+    ) {
+      const newString: string = displayValue.replace(/.$/, key);
+      setDisplayValue(newString);
+      return true;
+    }
+
+    return false;
   };
 
   const handleResultInDisplay = (key: string) => {
@@ -147,10 +176,8 @@ export default function Calculator(): JSX.Element {
       return;
     }
 
-    if (displayValue.length === 1 && displayValue[0] === '0' && !sinals.includes(key)) {
-      handleZeroInDisplay(key);
-      return;
-    }
+    const handleZeroResult: boolean = handleZeroInDisplay(key);
+    if (handleZeroResult) return;
 
     const isKeyNaN: boolean = handleNaN(key, true);
     if (isKeyNaN) return;
@@ -175,7 +202,8 @@ export default function Calculator(): JSX.Element {
 
   const handleResult = () => {
     const lastDigit: string = displayValue.at(-1) ?? '';
-    if (sinals.includes(lastDigit) || lastDigit === ',') return;
+    console.log(lastDigit);
+    if (sinals.includes(lastDigit) || lastDigit === '.') return;
     const value: string = eval(displayValue.replaceAll(',', '.')).toString().replaceAll('.', ',');
     setExpressionResult(value);
   };
@@ -190,19 +218,19 @@ export default function Calculator(): JSX.Element {
     {
       name: 'back',
       keyboardKey: 'Backspace',
-      content: '<',
+      content: <LuDelete />,
       event: () => handleBack()
     },
     {
       name: 'division',
       keyboardKey: '/',
-      content: ':',
+      content: <LuDivide />,
       event: () => handleKey('/')
     },
     {
       name: 'multiplication',
       keyboardKey: '*',
-      content: 'X',
+      content: <LuX />,
       event: () => handleKey('*')
     },
     {
@@ -223,7 +251,7 @@ export default function Calculator(): JSX.Element {
     {
       name: 'minus',
       keyboardKey: '-',
-      content: '-',
+      content: <LuMinus />,
       event: () => handleKey('-')
     },
     {
@@ -244,7 +272,7 @@ export default function Calculator(): JSX.Element {
     {
       name: 'plus',
       keyboardKey: '+',
-      content: '+',
+      content: <LuPlus />,
       event: () => handleKey('+')
     },
     {
@@ -265,12 +293,12 @@ export default function Calculator(): JSX.Element {
     {
       name: 'equal',
       keyboardKey: 'Enter',
-      content: '=',
+      content: <LuEqual />,
       event: () => handleResult()
     },
     {
       keyboardKey: '%',
-      content: '%',
+      content: <LuPercent />,
       event: () => handlePercentage()
     },
     {
