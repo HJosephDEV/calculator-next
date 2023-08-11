@@ -13,8 +13,41 @@
     align-items: flex-end;
     justify-content: flex-end;
 
-    gap: 18px;
+    gap: 24px;
     overflow: hidden;
+
+    .historicWrapper {
+      overflow: auto;
+      padding: 3px 0;
+
+      &::-webkit-scrollbar {
+        width: 0px;
+      }
+
+      .historicContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+
+        .historicItem {
+          position: relative;
+
+          .itemContent {
+            text-align: right;
+            animation: showItem 0.7s ease;
+
+            @keyframes showItem {
+              0% {
+                opacity: 0;
+              }
+              100% {
+                opacity: 1;
+              }
+            }
+          }
+        }
+      }
+    }
   }
 }
 
