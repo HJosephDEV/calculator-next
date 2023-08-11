@@ -7,6 +7,9 @@
   transition: all 0.4s ease;
   font-size: 18px;
   font-family: 'Pacifico', cursive;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
 
   &:hover {
