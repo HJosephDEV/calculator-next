@@ -194,6 +194,13 @@ export default function Calculator(): JSX.Element {
       return;
     }
 
+    if (!!expressionResult) {
+      handleKeyAfterResult();
+      setDisplayValue(expressionResult.substring(0, expressionResult.length - 1));
+      setExpressionResult('');
+      return;
+    }
+
     setDisplayValue('0');
   };
 
